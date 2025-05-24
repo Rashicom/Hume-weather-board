@@ -24,9 +24,12 @@ const WeatherTable = () => {
   const weatherData = getNext7Days();
 
   return (
-    <div className="mt-3 h-full flex flex-col justify-end ">
+    <div className="mt-3 h-full flex flex-col justify-end overflow-y-auto ">
       <h2>7-Day Weather Forecast</h2>
-      <table style={{ width: "100%", borderCollapse: "collapse" }} className="mt-3">
+      <table
+        style={{ width: "100%", borderCollapse: "collapse" }}
+        className="mt-3 table-auto"
+      >
         <thead className="text-left bg-white text-black">
           <tr>
             <th style={thStyle}>Date</th>
