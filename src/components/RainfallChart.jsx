@@ -1,65 +1,87 @@
-// RainfallChart.jsx
-import React, { useEffect, useRef } from "react";
-import * as echarts from "echarts";
+import  { useEffect, useRef } from "react";
+import * as am5 from "@amcharts/amcharts5";
+import * as am5map from "@amcharts/amcharts5/map";
+import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
+import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 
-const RainfallChart = () => {
+const RainfallChart = ({ location }) => {
   const chartRef = useRef(null);
+  const rootRef = useRef(null);
+  const pointSeriesRef = useRef(null);
 
   useEffect(() => {
-    const chartInstance = echarts.init(chartRef.current);
+    const root = am5.Root.new(chartRef.current);
+    rootRef.current = root;
 
-    const option = {
-      tooltip: {
-        trigger: "axis",
-      },
-      xAxis: {
-        type: "category",
-        boundaryGap: false,
-        data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      },
-      yAxis: {
-        type: "value",
-        name: "Rainfall (mm)",
-        splitLine: {
-          show: false,
-        },
-      },
-      grid: {
-        left: "10%",
-        right: "5%",
-        bottom: "15%",
-        top: "15%",
-      },
-      series: [
-        {
-          name: "Rainfall",
-          type: "line",
-          data: [10, 22, 28, 43, 49, 62, 70],
-          areaStyle: {
-            color: "rgba(0, 136, 212, 0.2)",
-          },
-          itemStyle: {
-            color: "#0088d4",
-          },
-          smooth: true,
-        },
-      ],
-    };
+    root.setThemes([am5themes_Animated.new(root)]);
 
-    chartInstance.setOption(option);
+    const chart = root.container.children.push(
+      am5map.MapChart.new(root, {
+        panX: "rotateX",
+        panY: "translateY",
+        projection: am5map.geoMercator(),
+      })
+    );
 
-    // Resize on window change
-    const handleResize = () => chartInstance.resize();
-    window.addEventListener("resize", handleResize);
+    chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
 
-    // Cleanup
+    const polygonSeries = chart.series.push(
+      am5map.MapPolygonSeries.new(root, {
+        geoJSON: am5geodata_worldLow,
+        exclude: ["AQ"],
+      })
+    );
+
+    polygonSeries.mapPolygons.template.setAll({
+      fill: am5.color(0xdadada),
+    });
+
+    const pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+    pointSeriesRef.current = pointSeries;
+
+    pointSeries.bullets.push(() =>
+      am5.Bullet.new(root, {
+        sprite: am5.Circle.new(root, {
+          radius: 6,
+          fill: am5.color(0xff0000),
+          tooltipText: "{title}",
+        }),
+      })
+    );
+
+    chart.appear(1000, 100);
+
     return () => {
-      chartInstance.dispose();
-      window.removeEventListener("resize", handleResize);
+      root.dispose();
     };
   }, []);
 
-  return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
+  useEffect(() => {
+    if (location && pointSeriesRef.current && rootRef.current) {
+      const { lat, lon, label } = location;
+
+      pointSeriesRef.current.data.setAll([
+        {
+          geometry: {
+            type: "Point",
+            coordinates: [lon, lat],
+          },
+          title: label,
+        },
+      ]);
+
+      const chart = rootRef.current.container.children.getIndex(0);
+      chart.zoomToGeoPoint({ longitude: lon, latitude: lat }, 50, true);
+    }
+  }, [location]);
+
+  return (
+    <div
+      id="chartdiv"
+      ref={chartRef}
+      style={{ width: "100%", height: "100%" }}
+    />
+  );
 };
 
 export default RainfallChart;
