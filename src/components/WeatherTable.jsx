@@ -1,64 +1,60 @@
-import React from "react";
-
-// Generate next 7 days with dates
-const getNext7Days = () => {
-  const today = new Date();
-  return Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    return {
-      date: date.toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-      }),
-      temp: Math.floor(25 + Math.random() * 6), // Random temp 25–30
-      condition: ["Sunny", "Partly Cloudy", "Rainy", "Cloudy", "Thunderstorms"][
-        i % 5
-      ],
-      humidity: Math.floor(40 + Math.random() * 40), // 40–80%
-    };
-  });
-};
+import { useState, useEffect } from "react";
+import { getNext7Days } from "../utils/weatherUtils";
 
 const WeatherTable = () => {
-  const weatherData = getNext7Days();
+  const [weatherData, setWeatherData] = useState([]);
+
+  useEffect(() => {
+    setWeatherData(getNext7Days());
+  }, []);
+  console.log({ weatherData });
+  if (!weatherData.length) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="mt-3 h-full flex flex-col justify-end overflow-y-auto ">
-      <h2>7-Day Weather Forecast</h2>
-      <table
-        style={{ width: "100%", borderCollapse: "collapse" }}
-        className="mt-3 table-auto"
-      >
-        <thead className="text-left bg-white text-black">
-          <tr>
-            <th style={thStyle}>Date</th>
-            <th style={thStyle}>Temperature (°C)</th>
-            <th style={thStyle}>humidity </th>
-          </tr>
-        </thead>
-        <tbody>
-          {weatherData.map((day, index) => (
-            <tr key={index} style={{ textAlign: "left" }}>
-              <td style={tdStyle}>{day.date}</td>
-              <td style={tdStyle}>{day.temp}&deg;</td>
-              <td style={tdStyle}>{day.humidity}</td>
+    <div className="mt-3 h-full flex flex-col justify-end overflow-y-auto">
+      <h2 className="text-xl font-semibold mb-4">7-Day Weather Forecast</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto ">
+          <thead className="text-left bg-white text-black 2xl:text-[22px]">
+            <tr>
+              <th className="px-4 py-2 border-b-2 border-gray-200">Date</th>
+              {/* <th className="px-4 py-2 border-b-2 border-gray-200">
+                Condition
+              </th> */}
+              <th className="px-4 py-2 border-b-2 border-gray-200">
+                Temperature
+              </th>
+              <th className="px-4 py-2 border-b-2 border-gray-200">Humidity</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="text-black text-[14px] 2xl:text-[20px]">
+            {weatherData.map((day, index) => (
+              <tr
+                key={index}
+                className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+              >
+                <td className="px-4 py-2 border-b border-gray-200">
+                  {day.date}
+                </td>
+                {/* <td className="px-4 py-2 border-b border-gray-200">
+                  <span className="mr-2">{day.icon}</span>
+                  {day.condition}
+                </td> */}
+                <td className="px-4 py-2 border-b border-gray-200 text-center">
+                  {day.temp}°C
+                </td>
+                <td className="px-4 py-2 border-b border-gray-200 text-center">
+                  {day.humidity}%
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
-};
-
-const thStyle = {
-  padding: "4px",
-  borderBottom: "2px solid #ddd",
-  fontWeight: "bold",
-};
-
-const tdStyle = {
-  padding: "4px",
 };
 
 export default WeatherTable;
