@@ -25,7 +25,7 @@ const RainfallChart = () => {
         },
       },
       grid: {
-        left: "5%",
+        left: "10%",
         right: "5%",
         bottom: "15%",
         top: "15%",
