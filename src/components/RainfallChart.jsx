@@ -1,86 +1,71 @@
-import  { useEffect, useRef } from "react";
-import * as am5 from "@amcharts/amcharts5";
-import * as am5map from "@amcharts/amcharts5/map";
-import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
-import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
-const RainfallChart = ({ location }) => {
-  const chartRef = useRef(null);
-  const rootRef = useRef(null);
-  const pointSeriesRef = useRef(null);
+const LocationMarker = ({ location }) => {
+  const map = useMap();
 
   useEffect(() => {
-    const root = am5.Root.new(chartRef.current);
-    rootRef.current = root;
-
-    root.setThemes([am5themes_Animated.new(root)]);
-
-    const chart = root.container.children.push(
-      am5map.MapChart.new(root, {
-        panX: "rotateX",
-        panY: "translateY",
-        projection: am5map.geoMercator(),
-      })
-    );
-
-    chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
-
-    const polygonSeries = chart.series.push(
-      am5map.MapPolygonSeries.new(root, {
-        geoJSON: am5geodata_worldLow,
-        exclude: ["AQ"],
-      })
-    );
-
-    polygonSeries.mapPolygons.template.setAll({
-      fill: am5.color(0xdadada),
-    });
-
-    const pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
-    pointSeriesRef.current = pointSeries;
-
-    pointSeries.bullets.push(() =>
-      am5.Bullet.new(root, {
-        sprite: am5.Circle.new(root, {
-          radius: 6,
-          fill: am5.color(0xff0000),
-          tooltipText: "{title}",
-        }),
-      })
-    );
-
-    chart.appear(1000, 100);
-
-    return () => {
-      root.dispose();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (location && pointSeriesRef.current && rootRef.current) {
-      const { lat, lon, label } = location;
-
-      pointSeriesRef.current.data.setAll([
-        {
-          geometry: {
-            type: "Point",
-            coordinates: [lon, lat],
-          },
-          title: label,
-        },
-      ]);
-
-      const chart = rootRef.current.container.children.getIndex(0);
-      chart.zoomToGeoPoint({ longitude: lon, latitude: lat }, 50, true);
+    if (location?.lat && location?.lon) {
+      map.setView([location.lat, location.lon], 10);
     }
-  }, [location]);
+  }, [location, map]);
+
+  if (!location) return null;
+
+  // Custom label above the marker
+  const rainfallIcon = L.divIcon({
+    className: "custom-rainfall-icon",
+    html: `<div style="
+      background-color: #5d9ce6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      white-space: nowrap;
+      box-shadow: 0 0 3px rgba(0,0,0,0.3);
+    ">${location.rainfall}mm</div>`,
+    iconSize: [60, 20], // size of the div
+    iconAnchor: [30, 50], // center bottom of the div
+  });
+
+  const defaultIcon = new L.Icon({
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+  });
 
   return (
-    <div
-      id="chartdiv"
-      ref={chartRef}
+    <>
+      {/* Rainfall label ABOVE marker */}
+      <Marker
+        position={[location.lat + 0.03, location.lon]} // slight shift upwards (approx. 3km)
+        icon={rainfallIcon}
+        interactive={false}
+      />
+      {/* Regular marker pin */}
+      <Marker position={[location.lat, location.lon]} icon={defaultIcon} />
+    </>
+  );
+};
+
+
+const RainfallChart = ({ location }) => {
+  return (
+    <MapContainer
+      center={[10.8505, 76.2711]} // Default center (Kerala)
+      zoom={7}
       style={{ width: "100%", height: "100%" }}
-    />
+      scrollWheelZoom={true}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <LocationMarker location={location} />
+    </MapContainer>
   );
 };
 
