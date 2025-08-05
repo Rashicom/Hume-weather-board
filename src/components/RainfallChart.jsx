@@ -8,11 +8,11 @@ const LocationMarker = ({ location }) => {
 
   useEffect(() => {
     if (location?.lat && location?.lon) {
-      map.setView([location.lat, location.lon], 10);
+      map.setView([location?.lat, location?.lon], 10);
     }
   }, [location, map]);
 
-  if (!location) return null;
+  if (!location?.lat || !location?.lon) return null;
 
   // Custom label above the marker
   const rainfallIcon = L.divIcon({
@@ -26,7 +26,7 @@ const LocationMarker = ({ location }) => {
       color: white;
       white-space: nowrap;
       box-shadow: 0 0 3px rgba(0,0,0,0.3);
-    ">${location.rainfall}mm</div>`,
+    ">${location?.rainfall}mm</div>`,
     iconSize: [60, 20], // size of the div
     iconAnchor: [30, 50], // center bottom of the div
   });
@@ -41,16 +41,15 @@ const LocationMarker = ({ location }) => {
     <>
       {/* Rainfall label ABOVE marker */}
       <Marker
-        position={[location.lat + 0.03, location.lon]} // slight shift upwards (approx. 3km)
+        position={[location?.lat + 0.03, location?.lon]} // slight shift upwards (approx. 3km)
         icon={rainfallIcon}
         interactive={false}
       />
       {/* Regular marker pin */}
-      <Marker position={[location.lat, location.lon]} icon={defaultIcon} />
+      <Marker position={[location?.lat, location?.lon]} icon={defaultIcon} />
     </>
   );
 };
-
 
 const RainfallChart = ({ location }) => {
   return (
