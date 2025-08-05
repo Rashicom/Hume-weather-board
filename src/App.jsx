@@ -1,4 +1,3 @@
-import { IoLocationOutline } from "react-icons/io5";
 import { TiWeatherSunny } from "react-icons/ti";
 import RainfallChart from "./components/RainfallChart";
 import TemperatureChart from "./components/TemperatureChart";
@@ -7,16 +6,36 @@ import SoilMoistureChart from "./components/SoilMoistureChart";
 import TempDetails from "./components/TempDetails";
 import WeatherTable from "./components/WeatherTable";
 import LocationSelect from "./components/LocationSelect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api } from "./utils/apiHandler";
 
 function App() {
-  const [location, setLocation] = useState();
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [locationOptions, setLocationOptions] = useState([]);
+
+  const fetchLocation = async () => {
+    try {
+      const res = await api.get(`/cluster`);
+    
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLocation();
+  }, []);
+
   return (
     <section className="md:h-screen w-screen">
       <div className="w-full h-full md:flex">
         <div className="bg-[#5d9ce6] h-full w-full md:w-[25%] p-3 lg:p-6 2xl:py-10  text-white flex flex-col ">
           <div className="flex items-center w-full ">
-            <LocationSelect location={location} setLocation={setLocation} />
+            <LocationSelect
+              location={selectedLocation}
+              setLocation={setSelectedLocation}
+              options={locationOptions}
+            />
           </div>
           <div className="mt-2 2xl:text-[20px]">Sunday, 18 May</div>
 
