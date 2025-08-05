@@ -7,7 +7,6 @@ const WeatherTable = () => {
   useEffect(() => {
     setWeatherData(getNext7Days());
   }, []);
-  console.log({ weatherData });
   if (!weatherData.length) {
     return <div>Loading...</div>;
   }

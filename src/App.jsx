@@ -6,17 +6,40 @@ import SoilMoistureChart from "./components/SoilMoistureChart";
 import TempDetails from "./components/TempDetails";
 import WeatherTable from "./components/WeatherTable";
 import LocationSelect from "./components/LocationSelect";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "./utils/apiHandler";
 
 function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locationOptions, setLocationOptions] = useState([]);
 
+  const intervalRef = useRef();
+
   const fetchLocation = async () => {
     try {
       const res = await api.get(`/cluster`);
-    
+      if (res.data && res.data.length > 0) {
+        const options = res.data.map((loc) => ({
+          label: loc.cluster_name,
+          value: loc.uuid,
+        }));
+        setLocationOptions(options);
+        setSelectedLocation(options[0]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchMapDetails = async () => {
+    try {
+      if (selectedLocation) {
+        const res = await api.get(
+          `/cluster-weather-map/${selectedLocation.value}`
+        );
+        if (res.data) {
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -25,6 +48,29 @@ function App() {
   useEffect(() => {
     fetchLocation();
   }, []);
+
+  useEffect(() => {
+    if (locationOptions.length > 0) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+
+      intervalRef.current = setInterval(() => {
+        setSelectedLocation((prev) => {
+          if (!prev) return locationOptions[0];
+          const currentIndex = locationOptions.findIndex(
+            (loc) => loc.value === prev.value
+          );
+          const nextIndex = (currentIndex + 1) % locationOptions.length;
+          return locationOptions[nextIndex];
+        });
+      }, 60000);
+
+      return () => clearInterval(intervalRef.current);
+    }
+  }, [locationOptions]);
+
+  useEffect(() => {
+    fetchMapDetails();
+  }, [selectedLocation]);
 
   return (
     <section className="md:h-screen w-screen">
