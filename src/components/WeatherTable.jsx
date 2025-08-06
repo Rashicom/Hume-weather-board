@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { getNext7Days } from "../utils/weatherUtils";
 
-const WeatherTable = () => {
-  const [weatherData, setWeatherData] = useState([]);
+const WeatherTable = ({ weatherData }) => {
+  console.log("Weather Data:", weatherData);
 
-  useEffect(() => {
-    setWeatherData(getNext7Days());
-  }, []);
-  if (!weatherData.length) {
+  if (!weatherData?.length) {
     return <div>Loading...</div>;
   }
 
@@ -29,23 +26,23 @@ const WeatherTable = () => {
             </tr>
           </thead>
           <tbody className="text-black text-[14px] 2xl:text-[20px]">
-            {weatherData.map((day, index) => (
+            {weatherData?.map((day, index) => (
               <tr
                 key={index}
                 className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
               >
                 <td className="px-4 py-2 border-b border-gray-200">
-                  {day.date}
+                  {day?.day}
                 </td>
                 {/* <td className="px-4 py-2 border-b border-gray-200">
                   <span className="mr-2">{day.icon}</span>
                   {day.condition}
                 </td> */}
                 <td className="px-4 py-2 border-b border-gray-200 text-center">
-                  {day.temp}°C
+                  {day?.avg_temp_max}°C
                 </td>
                 <td className="px-4 py-2 border-b border-gray-200 text-center">
-                  {day.humidity}%
+                  {day?.avg_soil_humidity}%
                 </td>
               </tr>
             ))}

@@ -12,6 +12,13 @@ import { api } from "./utils/apiHandler";
 function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locationOptions, setLocationOptions] = useState([]);
+  const [weatherHistory, setWeatherHistory] = useState([]);
+  const [xAxisData, setXAxisData] = useState([]);
+  const [tempdata, setTempData] = useState({});
+
+  const today = new Date();
+  const options = { weekday: "long", day: "numeric", month: "long" };
+  const formattedDate = today.toLocaleDateString("en-US", options);
 
   const intervalRef = useRef();
 
@@ -45,6 +52,26 @@ function App() {
     }
   };
 
+  const fetchWeatherHistory = async () => {
+    try {
+      if (selectedLocation) {
+        const res = await api.get(
+          `/cluster-weather-history/${selectedLocation.value}`
+        );
+        if (res?.data) {
+          const xAxis = res?.data?.data?.map((data) => data.day);
+          const minTemp = res?.data?.data?.map((data) => data.avg_temp_min);
+          const maxTemp = res?.data?.data?.map((data) => data.avg_temp_max);
+          setTempData({ minTemp, maxTemp });
+          setXAxisData(xAxis);
+          setWeatherHistory(res.data?.data);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchLocation();
   }, []);
@@ -70,6 +97,7 @@ function App() {
 
   useEffect(() => {
     fetchMapDetails();
+    fetchWeatherHistory();
   }, [selectedLocation]);
 
   return (
@@ -83,7 +111,7 @@ function App() {
               options={locationOptions}
             />
           </div>
-          <div className="mt-2 2xl:text-[20px]">Sunday, 18 May</div>
+          <div className="mt-2 2xl:text-[20px]">{formattedDate}</div>
 
           <div className="flex flex-col items-center  justify-center ">
             <span className="font-bold text-9xl 2xl:text-[150px] text-center mt-6">
@@ -96,7 +124,7 @@ function App() {
             </span>
           </div>
           <div className="flex-1 overflow-hidden  ">
-            <WeatherTable />
+            <WeatherTable weatherData={weatherHistory} />
           </div>
         </div>
         <div className="flex-1 bg-[#e4f1ff] rounded-2xl md:-ml-3  p-3 flex flex-col h-full">
@@ -119,7 +147,11 @@ function App() {
                   <h6 className="font-bold">Temperature</h6>
                 </div>
                 <div className="flex-1">
-                  <TemperatureChart />
+                  <TemperatureChart
+                    xAxisData={xAxisData}
+                    maxTemp={tempdata?.maxTemp}
+                    minTemp={tempdata?.minTemp}
+                  />
                 </div>
               </div>
               <div className="h-[300px] md:h-auto  w-full bg-white  rounded-2xl flex flex-col">
