@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { getNext7Days } from "../utils/weatherUtils";
 
 const WeatherTable = ({ weatherData }) => {
-  console.log("Weather Data:", weatherData);
-
   if (!weatherData?.length) {
     return <div>Loading...</div>;
   }
@@ -22,7 +20,7 @@ const WeatherTable = ({ weatherData }) => {
               <th className="px-4 py-2 border-b-2 border-gray-200">
                 Temperature
               </th>
-              <th className="px-4 py-2 border-b-2 border-gray-200">Humidity</th>
+              <th className="px-4 py-2 border-b-2 border-gray-200">Rain</th>
             </tr>
           </thead>
           <tbody className="text-black text-[14px] 2xl:text-[20px]">
@@ -31,18 +29,15 @@ const WeatherTable = ({ weatherData }) => {
                 key={index}
                 className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
               >
-                <td className="px-4 py-2 border-b border-gray-200">
+                <td className="px-4 py-2 border-b border-gray-200 text-nowrap">
                   {day?.day}
                 </td>
-                {/* <td className="px-4 py-2 border-b border-gray-200">
-                  <span className="mr-2">{day.icon}</span>
-                  {day.condition}
-                </td> */}
+
                 <td className="px-4 py-2 border-b border-gray-200 text-center">
                   {day?.avg_temp_max}°C
                 </td>
                 <td className="px-4 py-2 border-b border-gray-200 text-center">
-                  {day?.avg_soil_humidity}%
+                  {day?.avg_rain}
                 </td>
               </tr>
             ))}

@@ -114,6 +114,8 @@ const customStyles = {
     height: "auto",
     padding: 0,
     width: "100%",
+    fontWeight: "bold",
+    fontSize: "30px",
   }),
   valueContainer: (base) => ({
     ...base,
