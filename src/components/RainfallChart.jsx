@@ -1,86 +1,92 @@
-import  { useEffect, useRef } from "react";
-import * as am5 from "@amcharts/amcharts5";
-import * as am5map from "@amcharts/amcharts5/map";
-import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
-import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
-const RainfallChart = ({ location }) => {
-  const chartRef = useRef(null);
-  const rootRef = useRef(null);
-  const pointSeriesRef = useRef(null);
+const RainfallMarker = ({ lat, lon, rainfall }) => {
+  const rainfallIcon = L.divIcon({
+    className: "custom-rainfall-icon",
+    html: `<div style="
+      background-color: #5d9ce6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      white-space: nowrap;
+      box-shadow: 0 0 3px rgba(0,0,0,0.3);
+    
+    ">${rainfall}mm</div>`,
+    iconSize: [70, 20],
+    iconAnchor: [30, 0],
+  });
 
-  useEffect(() => {
-    const root = am5.Root.new(chartRef.current);
-    rootRef.current = root;
-
-    root.setThemes([am5themes_Animated.new(root)]);
-
-    const chart = root.container.children.push(
-      am5map.MapChart.new(root, {
-        panX: "rotateX",
-        panY: "translateY",
-        projection: am5map.geoMercator(),
-      })
-    );
-
-    chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
-
-    const polygonSeries = chart.series.push(
-      am5map.MapPolygonSeries.new(root, {
-        geoJSON: am5geodata_worldLow,
-        exclude: ["AQ"],
-      })
-    );
-
-    polygonSeries.mapPolygons.template.setAll({
-      fill: am5.color(0xdadada),
-    });
-
-    const pointSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
-    pointSeriesRef.current = pointSeries;
-
-    pointSeries.bullets.push(() =>
-      am5.Bullet.new(root, {
-        sprite: am5.Circle.new(root, {
-          radius: 6,
-          fill: am5.color(0xff0000),
-          tooltipText: "{title}",
-        }),
-      })
-    );
-
-    chart.appear(1000, 100);
-
-    return () => {
-      root.dispose();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (location && pointSeriesRef.current && rootRef.current) {
-      const { lat, lon, label } = location;
-
-      pointSeriesRef.current.data.setAll([
-        {
-          geometry: {
-            type: "Point",
-            coordinates: [lon, lat],
-          },
-          title: label,
-        },
-      ]);
-
-      const chart = rootRef.current.container.children.getIndex(0);
-      chart.zoomToGeoPoint({ longitude: lon, latitude: lat }, 50, true);
-    }
-  }, [location]);
+  const defaultIcon = new L.Icon({
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+  });
 
   return (
-    <div
-      id="chartdiv"
-      ref={chartRef}
-      style={{ width: "100%", height: "100%" }}
-    />
+    <>
+      <Marker
+        position={[lat + 0.03, lon]}
+        icon={rainfallIcon}
+        interactive={false}
+      />
+
+      <Marker position={[lat, lon]} icon={defaultIcon} />
+    </>
+  );
+};
+
+// Fit the map to show all markers
+const FitBounds = ({ locations }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (locations?.length > 0) {
+      const bounds = L.latLngBounds(
+        locations.map((item) => [item.cordinate[1], item.cordinate[0]])
+      );
+      map.fitBounds(bounds, { padding: [30, 30] });
+    }
+  }, [locations, map]);
+
+  return null;
+};
+
+const RainfallChart = ({ data }) => {
+  return (
+    <MapContainer
+      center={[10.8505, 76.2711]} // Default center
+      zoom={6}
+      style={{
+        width: "100%",
+        height: "100%",
+        borderRadius: "16px",
+        overflow: "hidden",
+      }}
+      scrollWheelZoom={true}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+
+      {/* Adjust map bounds based on data */}
+      <FitBounds locations={data} />
+
+      {/* Render multiple markers */}
+      {data?.map((item, index) => (
+        <RainfallMarker
+          key={index}
+          lat={item.cordinate[1]}
+          lon={item.cordinate[0]}
+          rainfall={item.rain_reading}
+        />
+      ))}
+    </MapContainer>
   );
 };
 

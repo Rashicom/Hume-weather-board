@@ -1,8 +1,8 @@
-// TemperatureChart.jsx
+// SoilTemperatureChart.jsx
 import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
-const TemperatureChart = ({ xAxisData, minTemp, maxTemp }) => {
+const RainChart = ({ xAxisData, yAxisData }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -12,6 +12,16 @@ const TemperatureChart = ({ xAxisData, minTemp, maxTemp }) => {
       tooltip: {
         trigger: "axis",
       },
+      legend: {
+        top: 30,
+        data: ["Surface (0cm)", "10cm Depth", "30cm Depth"],
+        show: false,
+      },
+      grid: {
+        left: "15%",
+        right: "5%",
+        bottom: "10%",
+      },
       xAxis: {
         type: "category",
         boundaryGap: false,
@@ -19,31 +29,23 @@ const TemperatureChart = ({ xAxisData, minTemp, maxTemp }) => {
       },
       yAxis: {
         type: "value",
-        name: "°C",
-      },
-      grid: {
-        left: "15%",
-        right: "10%",
-        bottom: "10%",
+        name: "(°C)",
       },
       series: [
         {
-          name: "Min Temperature",
+          name: "Rain fall",
           type: "line",
+          data: yAxisData,
           smooth: true,
-          data: minTemp,
-          lineStyle: { color: "#ff5722" },
-          itemStyle: { color: "#ff5722" },
-          areaStyle: { color: "rgba(255, 87, 34, 0.2)" },
-        },
-        {
-          name: "Max Temperature",
-          type: "line",
-          smooth: true,
-          data: maxTemp,
-          lineStyle: { color: "#2196f3" },
-          itemStyle: { color: "#2196f3" },
-          areaStyle: { color: "rgba(33, 150, 243, 0.2)" },
+          areaStyle: {
+            color: "rgba(255, 153, 0, 0.2)",
+          },
+          lineStyle: {
+            color: "#ff9900",
+          },
+          itemStyle: {
+            color: "#ff9900",
+          },
         },
       ],
     };
@@ -57,9 +59,9 @@ const TemperatureChart = ({ xAxisData, minTemp, maxTemp }) => {
       chart.dispose();
       window.removeEventListener("resize", resizeHandler);
     };
-  }, [xAxisData, minTemp, maxTemp]);
+  }, [xAxisData, yAxisData]);
 
   return <div ref={chartRef} style={{ width: "100%", height: "100%" }} />;
 };
 
-export default TemperatureChart;
+export default RainChart;
