@@ -117,13 +117,19 @@ function App() {
 
           <div className="flex flex-col items-center  justify-center ">
             <span className="font-bold text-9xl 2xl:text-[150px] text-center mt-6">
-              27&deg;
+              {(() => {
+                if (weatherHistory.length > 0) {
+                  const today = new Date().toISOString().split("T")[0]; 
+                  const todayData = weatherHistory.find((item) =>
+                    item.day?.startsWith(today)
+                  );
+                  return todayData?.avg_temp_max != null
+                    ? `${Math.round(todayData.avg_temp_max)}°`
+                    : "N/A";
+                }
+                return "N/A";
+              })()}
             </span>
-
-            {/* <span className="mt-5 flex  items-center gap-5 2xl:text-[20px]">
-              <TiWeatherSunny />
-              sunny
-            </span> */}
           </div>
           <div className="flex-1 overflow-hidden  ">
             <WeatherTable weatherData={weatherHistory} />
@@ -168,22 +174,6 @@ function App() {
                     />
                   </div>
                 </div>
-                {/* <div className="h-[300px] md:h-auto  w-full bg-white  rounded-2xl flex flex-col">
-                  <div className=" px-3 py-2">
-                    <h6 className="font-bold">Soil Moisture</h6>
-                  </div>
-                  <div className="flex-1">
-                    <SoilMoistureChart />
-                  </div>
-                </div> */}
-                {/* <div className="h-[300px] md:h-auto  w-full bg-white  rounded-2xl flex flex-col">
-                  <div className=" px-3 py-2">
-                    <h6 className="font-bold">Feels Like</h6>
-                  </div>
-                  <div className="flex-1">
-                    <TempDetails />
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
