@@ -1,14 +1,8 @@
 import { useState, useEffect } from "react";
 import { getNext7Days } from "../utils/weatherUtils";
 
-const WeatherTable = () => {
-  const [weatherData, setWeatherData] = useState([]);
-
-  useEffect(() => {
-    setWeatherData(getNext7Days());
-  }, []);
-  console.log({ weatherData });
-  if (!weatherData.length) {
+const WeatherTable = ({ weatherData }) => {
+  if (!weatherData?.length) {
     return <div>Loading...</div>;
   }
 
@@ -26,27 +20,24 @@ const WeatherTable = () => {
               <th className="px-4 py-2 border-b-2 border-gray-200">
                 Temperature
               </th>
-              <th className="px-4 py-2 border-b-2 border-gray-200">Humidity</th>
+              <th className="px-4 py-2 border-b-2 border-gray-200">Rain</th>
             </tr>
           </thead>
           <tbody className="text-black text-[14px] 2xl:text-[20px]">
-            {weatherData.map((day, index) => (
+            {weatherData?.map((day, index) => (
               <tr
                 key={index}
                 className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
               >
-                <td className="px-4 py-2 border-b border-gray-200">
-                  {day.date}
+                <td className="px-4 py-2 border-b border-gray-200 text-nowrap">
+                  {day?.day}
                 </td>
-                {/* <td className="px-4 py-2 border-b border-gray-200">
-                  <span className="mr-2">{day.icon}</span>
-                  {day.condition}
-                </td> */}
+
                 <td className="px-4 py-2 border-b border-gray-200 text-center">
-                  {day.temp}°C
+                  {day?.avg_temp_max}°C
                 </td>
                 <td className="px-4 py-2 border-b border-gray-200 text-center">
-                  {day.humidity}%
+                  {day?.avg_rain}
                 </td>
               </tr>
             ))}
