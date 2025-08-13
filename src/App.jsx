@@ -125,9 +125,9 @@ function App() {
                   );
                   return todayData?.avg_temp_max != null
                     ? `${Math.round(todayData.avg_temp_max)}°`
-                    : "N/A";
+                    : "";
                 }
-                return "N/A";
+                return "";
               })()}
             </span>
           </div>
@@ -138,7 +138,7 @@ function App() {
         <div className="flex-1 bg-[#e4f1ff] rounded-2xl md:-ml-3  p-3 flex flex-col h-full">
           <div>
             <h6 className="text-2xl font-bold">മുന്നൊരുക്കം ദുരന്ത നിവാരണ കാലാവസ്ഥാ ഡാഷ്‌ബോർഡ്</h6>
-            <p>Supported by NABARD</p>
+            <p>നബാർഡിന്റെ പിന്തുണയോടെ</p>
           </div>
           <div className="flex items-center gap-4">
             <img src="/hume_icon.jpeg" alt="hume_icon" className="w-10 h-10"/>
@@ -149,7 +149,7 @@ function App() {
           <div className="flex-1 md:flex gap-3 ">
             <div className="mt-2 h-[300px] md:h-full w-full md:w-[70%] bg-white rounded-2xl flex flex-col">
               <div className=" px-3 pt-2">
-                <h6 className="font-bold">Rain Fall</h6>
+                <h6 className="font-bold">ഇന്നത്തെ മഴ ലഭ്യതയുടെ ഭൂപടം</h6>
               </div>
               <div className="flex-1 p-2">
                 <RainfallChart data={mapData} />
@@ -159,7 +159,7 @@ function App() {
               <div className="flex flex-col  flex-1 gap-2 h-[600px] md:h-auto">
                 <div className=" flex-1  w-full bg-white  rounded-2xl flex flex-col">
                   <div className=" px-3 py-2">
-                    <h6 className="font-bold">Temperature</h6>
+                    <h6 className="font-bold">താപനില</h6>
                   </div>
                   <div className="flex-1">
                     <TemperatureChart
@@ -171,7 +171,7 @@ function App() {
                 </div>
                 <div className="flex-1  w-full bg-white  rounded-2xl flex flex-col">
                   <div className=" px-3 py-2">
-                    <h6 className="font-bold">Soil Temperature</h6>
+                    <h6 className="font-bold">മഴ ലഭ്യത</h6>
                   </div>
                   <div className="flex-1">
                     <RainChart
