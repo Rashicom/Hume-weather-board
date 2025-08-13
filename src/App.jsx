@@ -91,7 +91,7 @@ function App() {
           const nextIndex = (currentIndex + 1) % locationOptions.length;
           return locationOptions[nextIndex];
         });
-      }, 60000);
+      }, 10000);
 
       return () => clearInterval(intervalRef.current);
     }
