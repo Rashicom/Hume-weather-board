@@ -137,8 +137,14 @@ function App() {
         </div>
         <div className="flex-1 bg-[#e4f1ff] rounded-2xl md:-ml-3  p-3 flex flex-col h-full">
           <div>
-            <h6 className="text-2xl font-bold">Weather Forecast Dashboard</h6>
-            <p>Check out today's weather information </p>
+            <h6 className="text-2xl font-bold">മുന്നൊരുക്കം ദുരന്ത നിവാരണ കാലാവസ്ഥാ ഡാഷ്‌ബോർഡ്</h6>
+            <p>Supported by NABARD</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <img src="public/hume_icon.jpeg" alt="hume_icon" className="w-10 h-10"/>
+            <img src="public/sterc_icon.jpeg" alt="sterc_icon" className="w-10 h-10"/>
+            <img src="public/nabard_icon.jpeg" alt="hume_icon" className="w-10 h-10"/>
+            <img src="public/gov_icon.jpeg" alt="gov_icon" className="w-10 h-10"/>
           </div>
           <div className="flex-1 md:flex gap-3 ">
             <div className="mt-2 h-[300px] md:h-full w-full md:w-[70%] bg-white rounded-2xl flex flex-col">
