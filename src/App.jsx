@@ -141,10 +141,10 @@ function App() {
             <p>Supported by NABARD</p>
           </div>
           <div className="flex items-center gap-4">
-            <img src="public/hume_icon.jpeg" alt="hume_icon" className="w-10 h-10"/>
-            <img src="public/sterc_icon.jpeg" alt="sterc_icon" className="w-10 h-10"/>
-            <img src="public/nabard_icon.jpeg" alt="hume_icon" className="w-10 h-10"/>
-            <img src="public/gov_icon.jpeg" alt="gov_icon" className="w-10 h-10"/>
+            <img src="/hume_icon.jpeg" alt="hume_icon" className="w-10 h-10"/>
+            <img src="/sterc_icon.jpeg" alt="sterc_icon" className="w-10 h-10"/>
+            <img src="/nabard_icon.jpeg" alt="hume_icon" className="w-10 h-10"/>
+            <img src="/gov_icon.jpeg" alt="gov_icon" className="w-10 h-10"/>
           </div>
           <div className="flex-1 md:flex gap-3 ">
             <div className="mt-2 h-[300px] md:h-full w-full md:w-[70%] bg-white rounded-2xl flex flex-col">
