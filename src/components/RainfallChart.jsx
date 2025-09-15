@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
+// test change
+// test change
 const RainfallMarker = ({ lat, lon, rainfall }) => {
   const rainfallIcon = L.divIcon({
     className: "custom-rainfall-icon",
